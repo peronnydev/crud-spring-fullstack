@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Alunos</title>
+</head>
+<body>
+<h1>CRUD - Alunos</h1>
+<h3>100% Funcional</h3>
+<hr>
+<input type="text" id="matricula" placeholder="Matricula" required>
+<input type="text" id="nome" placeholder="Nome" required>
+<input type="number" id="idade" placeholder="Idade" required>
+<input type="text" id="curso" placeholder="Curso" required>
+<input type="email" id="email" placeholder="Email" required>
+<input type="number" id="telefone" placeholder="Telefone" required>
+<input type="button" value="Adicionar" onclick="adicionarAluno()">
+<hr>
+<input type="text" id="editarMatricula" placeholder="Matricula" required>
+<input type="text" id="editarNome" placeholder="Nome" required>
+<input type="number" id="editarIdade" placeholder="Idade" required>
+<input type="text" id="editarCurso" placeholder="Curso" required>
+<input type="email" id="editarEmail" placeholder="Email" required>
+<input type="text" id="editarTelefone" placeholder="Telefone" required>
+<input type="button" id="atualizar" value="Editar" onclick="editarAluno()">
+<hr>
+<input type="text" id="alunoPesquisado" placeholder="Nome do aluno">
+<input type="button" value="Pesquisar" onclick="pesquisarAluno()">
+<hr>
+<table border="1">
+    <thead>
+    <tr>
+        <th>UUID</th>
+        <th>Matricula</th>
+        <th>Nome</th>
+        <th>Idade</th>
+        <th>Curso</th>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th>Ação</th>
+    </tr>
+    </thead>
+    <tbody id = "tbody">
+
+    </tbody>
+
+</table>
+<script>
+    const url = "http://localhost:8083/alunos"
+
+    function limparCamposAdicionar(){
+        document.getElementById("matricula").value = "";
+        document.getElementById("nome").value = "";
+        document.getElementById("idade").value = "";
+        document.getElementById("curso").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("telefone").value = "";
+    }
+
+    function limparCamposEditar(){
+        document.getElementById("editarMatricula").value = "";
+        document.getElementById("editarNome").value = "";
+        document.getElementById("editarIdade").value = "";
+        document.getElementById("editarCurso").value = "";
+        document.getElementById("editarEmail").value = "";
+        document.getElementById("editarTelefone").value = "";
+    }
+
+    async function pesquisarAluno(){
+        const nome = document.getElementById("alunoPesquisado").value;
+        if(nome === ""){
+            alert("Preencha o campo!")
+            mostrarAlunos();
+            return;
+        }
+        const resposta = await fetch(url + `/entidade/busca/${nome}`);
+        const listaAlunos = await resposta.json();
+        const tbody = document.getElementById("tbody")
+        tbody.innerHTML = "";
+        listaAlunos.forEach(aluno => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${aluno.id}</td>
+                <td>${aluno.matricula}</td>
+                <td>${aluno.nome}</td>
+                <td>${aluno.idade}</td>
+                <td>${aluno.curso}</td>
+                <td>${aluno.email}</td>
+                <td>${aluno.telefone}</td>
+                <td>
+                  <button onclick="removerAluno('${aluno.id}')">Remover</button>
+                  <button onclick="selecionarAluno('${aluno.id}')">Editar</button>
+                </td>
+            `
+            tbody.appendChild(tr)
+        });
+    }
+
+    async function mostrarAlunos(){
+        const resposta = await fetch(url + "/entidade");
+        const listaAlunos = await resposta.json();
+
+        const tbody = document.getElementById("tbody")
+        tbody.innerHTML = "";
+        listaAlunos.forEach(aluno => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${aluno.id}</td>
+                <td>${aluno.matricula}</td>
+                <td>${aluno.nome}</td>
+                <td>${aluno.idade}</td>
+                <td>${aluno.curso}</td>
+                <td>${aluno.email}</td>
+                <td>${aluno.telefone}</td>
+                <td>
+                  <button onclick="removerAluno('${aluno.id}')">Remover</button>
+                  <button onclick="selecionarAluno('${aluno.id}')">Editar</button>
+                </td>
+            `
+            tbody.appendChild(tr)
+        });
+    }
+
+    async function adicionarAluno(){
+        if(
+            document.getElementById("matricula").value === "" ||
+            document.getElementById("nome").value === "" ||
+            document.getElementById("idade").value === "" ||
+            document.getElementById("curso").value === "" ||
+            document.getElementById("email").value === "" ||
+            document.getElementById("telefone").value === ""
+        ){
+            alert("Preencha todos os campos");
+            return;
+        }
+        const resposta = await fetch(url + "/adicionar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                matricula: document.getElementById("matricula").value,
+                nome: document.getElementById("nome").value,
+                idade: document.getElementById("idade").value,
+                curso: document.getElementById("curso").value,
+                email: document.getElementById("email").value,
+                telefone: document.getElementById("telefone").value
+            })
+        });
+
+        limparCamposAdicionar();
+
+        const validar = await resposta.json();
+        if(validar === false){
+            alert("Aluno já cadastrado");
+            return;
+        }
+
+        mostrarAlunos();
+    }
+
+    let uuidSelecionado = null;
+
+    function selecionarAluno(uuid){
+        uuidSelecionado = uuid;
+        fetch(url + `/entidade/${uuid}`)
+        .then(resposta => resposta.json())
+        .then(aluno => {
+            document.getElementById("editarMatricula").value = aluno.matricula;
+            document.getElementById("editarNome").value = aluno.nome;
+            document.getElementById("editarIdade").value = aluno.idade;
+            document.getElementById("editarCurso").value = aluno.curso;
+            document.getElementById("editarEmail").value = aluno.email;
+            document.getElementById("editarTelefone").value = aluno.telefone;
+        });
+    }
+
+    async function editarAluno(){
+        if(
+            document.getElementById("editarMatricula").value === "" ||
+            document.getElementById("editarNome").value === "" ||
+            document.getElementById("editarIdade").value === "" ||
+            document.getElementById("editarCurso").value === "" ||
+            document.getElementById("editarEmail").value === "" ||
+            document.getElementById("editarTelefone").value === ""
+        ){
+            alert("Preencha todos os campos");
+            return;
+        }
+
+        if(!uuidSelecionado){
+            alert("Selecione um aluno para editar");
+            return;
+        }
+
+        const resposta = await fetch(url + `/atualizar/${uuidSelecionado}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                matricula: document.getElementById("editarMatricula").value,
+                nome: document.getElementById("editarNome").value,
+                idade: document.getElementById("editarIdade").value,
+                curso: document.getElementById("editarCurso").value,
+                email: document.getElementById("editarEmail").value,
+                telefone: document.getElementById("editarTelefone").value
+            })
+        });
+
+        const validar = await resposta.json();
+        if(validar === false){
+            alert("Erro ao processar edição");
+            return;
+        }
+
+        limparCamposEditar();
+
+        uuidSelecionado = null;
+        mostrarAlunos();
+    }
+
+    async function removerAluno(uuid){
+        await fetch(url + `/remover/${uuid}`, {method: "DELETE",});
+        mostrarAlunos();
+    }
+
+    mostrarAlunos();
+</script>
+</body>
+</html>
