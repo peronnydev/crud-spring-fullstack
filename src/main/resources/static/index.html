@@ -8,7 +8,14 @@
 <style>
     *{
         font-family: Arial, Helvetica, sans-serif;
-        background-color: #f4f4f4;
+        background-color: black;
+        color: white;
+        border-color: orange;
+    }
+    h1,h2,h3
+    {
+        text-align: center;
+        color: orange;
     }
     input{
         margin: 5px;
@@ -18,8 +25,10 @@
         border-collapse: collapse;
     }
     th{
-        background-color: #333;
-        color: white;
+        background-color: orange;
+        color: black;
+        text-align: center;
+        align-items: center;
     }
     th, td{
         padding: 10px;
@@ -30,38 +39,52 @@
         padding: 5px;
         cursor: pointer;
         border-radius: 4px;
+        border-style: solid;
         width: 80px;
     }
     input[type="text"], input[type="number"], input[type="email"]{
+        border-style: solid;
         padding: 5px;
         border-radius: 4px;
         width: 200px;
     }
-
+    .meio{
+        text-align: center;
+        align-items: center;
+    }
 
 </style>
 <body>
 <h1>CRUD - Alunos</h1>
 <h3>100% Funcional</h3>
 <hr>
-<input type="text" id="matricula" placeholder="Matricula" required>
-<input type="text" id="nome" placeholder="Nome" required>
-<input type="number" id="idade" placeholder="Idade" required>
-<input type="text" id="curso" placeholder="Curso" required>
-<input type="email" id="email" placeholder="Email" required>
-<input type="number" id="telefone" placeholder="Telefone" required>
-<input type="button" value="Adicionar" onclick="adicionarAluno()">
+<h2>Adicionar</h2>
+<div class="meio">
+    <input type="text" id="matricula" placeholder="Matricula" required>
+    <input type="text" id="nome" placeholder="Nome" required>
+    <input type="number" id="idade" placeholder="Idade" required>
+    <input type="text" id="curso" placeholder="Curso" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="number" id="telefone" placeholder="Telefone" required>
+    <input type="button" value="Adicionar" onclick="adicionarAluno()">
+</div>
 <hr>
-<input type="text" id="editarMatricula" placeholder="Matricula" required>
-<input type="text" id="editarNome" placeholder="Nome" required>
-<input type="number" id="editarIdade" placeholder="Idade" required>
-<input type="text" id="editarCurso" placeholder="Curso" required>
-<input type="email" id="editarEmail" placeholder="Email" required>
-<input type="text" id="editarTelefone" placeholder="Telefone" required>
-<input type="button" id="atualizar" value="Editar" onclick="editarAluno()">
+<h2>Editar</h2>
+<div class="meio">
+    <input type="text" id="editarMatricula" placeholder="Matricula" required>
+    <input type="text" id="editarNome" placeholder="Nome" required>
+    <input type="number" id="editarIdade" placeholder="Idade" required>
+    <input type="text" id="editarCurso" placeholder="Curso" required>
+    <input type="email" id="editarEmail" placeholder="Email" required>
+    <input type="text" id="editarTelefone" placeholder="Telefone" required>
+    <input type="button" id="atualizar" value="Editar" onclick="editarAluno()">
+</div>
 <hr>
-<input type="text" id="alunoPesquisado" placeholder="Nome do aluno">
-<input type="button" value="Pesquisar" onclick="pesquisarAluno()">
+<h2>Pesquisar</h2>
+<div class="meio">
+    <input type="text" id="alunoPesquisado" placeholder="Nome do aluno">
+    <input type="button" value="Pesquisar" onclick="pesquisarAluno()">
+</div>
 <hr>
 <table border="1">
     <thead>
