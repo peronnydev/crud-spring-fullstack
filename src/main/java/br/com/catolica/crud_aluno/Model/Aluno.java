@@ -12,6 +12,8 @@ public class Aluno {
     private String telefone;
     private boolean ativo;
 
+    public Aluno(){}
+
     public Aluno(String nome, String matricula, String curso, int idade, String email, String telefone){
         this.id = UUID.randomUUID();
         this.nome = nome;
