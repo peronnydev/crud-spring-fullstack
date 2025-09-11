@@ -20,6 +20,12 @@ public class ApiController {
         return alunoRepository.findAll();
     }
 
+    @GetMapping("/entidade/{uuid}")
+    public Object pesquisarId(@PathVariable UUID uuid){
+        return alunoRepository.pesquisarIdAluno(uuid);
+    }
+
+
     @GetMapping("/entidade/busca/{nome}")
     public Object pesquisarNome(@PathVariable String nome){
         return alunoRepository.pesquisarNomeAluno(nome);
@@ -32,12 +38,30 @@ public class ApiController {
 
     @PostMapping("/adicionar")
     public Object adicionarAluno(@RequestBody Aluno aluno){
-        alunoRepository.salvarAluno(aluno);
-        return aluno;
+        Aluno novoAluno = new Aluno(
+                aluno.getNome(),
+                aluno.getMatricula(),
+                aluno.getCurso(),
+                aluno.getIdade(),
+                aluno.getEmail(),
+                aluno.getTelefone()
+        );
+        alunoRepository.salvarAluno(novoAluno);
+        return novoAluno;
     }
 
     @PutMapping("/atualizar/{uuid}")
     public Object atualizarAluno(@PathVariable UUID uuid, @RequestBody Aluno alunoAtualizado) {
-        return alunoRepository.editarAluno(uuid, alunoAtualizado);
+        Aluno aluno = new Aluno(
+                alunoAtualizado.getNome(),
+                alunoAtualizado.getMatricula(),
+                alunoAtualizado.getCurso(),
+                alunoAtualizado.getIdade(),
+                alunoAtualizado.getEmail(),
+                alunoAtualizado.getTelefone()
+        );
+        aluno.setId(uuid);
+        aluno.setAtivo(alunoAtualizado.getAtivo());
+        return alunoRepository.editarAluno(uuid, aluno);
     }
 }

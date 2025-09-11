@@ -2,15 +2,10 @@ package br.com.catolica.crud_aluno.Repository;
 
 import br.com.catolica.crud_aluno.Model.Aluno;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Repository
@@ -41,21 +36,20 @@ public class AlunoRepository{
         });
     }
 
-    public Object salvarAluno(Aluno aluno){
+    public void salvarAluno(Aluno aluno){
         String sql = """
-                INSERT INTO aluno (id, nome, matricula, curso, idade, email, telefone)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO aluno (id, nome, matricula, curso, idade, email, telefone, ativo)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
-        aluno.setId(UUID.randomUUID());
         int atributos = jdbcTemplate.update(sql,
-                aluno.getId(),
+                aluno.getId().toString(),
                 aluno.getNome(),
                 aluno.getMatricula(),
                 aluno.getCurso(),
                 aluno.getIdade(),
                 aluno.getEmail(),
-                aluno.getTelefone());
-        return atributos > 1;
+                aluno.getTelefone(),
+                aluno.getAtivo());
     }
 
     public Object removerAluno(UUID uuid){
@@ -78,7 +72,7 @@ public class AlunoRepository{
                 aluno.getEmail(),
                 aluno.getTelefone(),
                 id);
-        return atributos > 0;
+        return aluno;
     }
 
     public Object pesquisarNomeAluno(String nome){
@@ -87,6 +81,24 @@ public class AlunoRepository{
                 """;
         String nomeBusca = "%" + nome + "%";
         return jdbcTemplate.query(sql, new Object[]{nomeBusca}, (rs, rowNum) -> {
+            Aluno aluno = new Aluno();
+            aluno.setId(UUID.fromString(rs.getString("id")));
+            aluno.setNome(rs.getString("nome"));
+            aluno.setMatricula(rs.getString("matricula"));
+            aluno.setCurso(rs.getString("curso"));
+            aluno.setIdade(rs.getInt("idade"));
+            aluno.setEmail(rs.getString("email"));
+            aluno.setTelefone(rs.getString("telefone"));
+            aluno.setAtivo(rs.getBoolean("ativo"));
+            return aluno;
+        });
+    }
+
+    public Object pesquisarIdAluno(UUID uuid){
+        String sql = """
+                SELECT * FROM aluno WHERE id = ? AND ativo = true
+                """;
+        return jdbcTemplate.queryForObject(sql, new Object[]{uuid}, (rs, rowNum) -> {
             Aluno aluno = new Aluno();
             aluno.setId(UUID.fromString(rs.getString("id")));
             aluno.setNome(rs.getString("nome"));
