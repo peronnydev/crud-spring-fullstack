@@ -2,6 +2,7 @@ package br.com.catolica.crud_aluno.Controller;
 
 import br.com.catolica.crud_aluno.Model.Aluno;
 import br.com.catolica.crud_aluno.Repository.AlunoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -11,7 +12,8 @@ import java.util.*;
 @RequestMapping("/alunos")
 public class ApiController {
 
-    AlunoRepository alunoRepository = new AlunoRepository();
+    @Autowired
+    AlunoRepository alunoRepository;
 
     @GetMapping("/entidade")
     public Object retornarTodos(){

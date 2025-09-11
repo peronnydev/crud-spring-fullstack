@@ -2,21 +2,30 @@ package br.com.catolica.crud_aluno.Repository;
 
 import br.com.catolica.crud_aluno.Model.Aluno;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Repository
 public class AlunoRepository{
 
+    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    public AlunoRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public List<Aluno> findAll() {
         String sql = """
-                SELECT * FROM alunos WHERE ativo = true
+                SELECT * FROM aluno WHERE ativo = true
                 """;
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Aluno aluno = new Aluno();
@@ -34,23 +43,24 @@ public class AlunoRepository{
 
     public Object salvarAluno(Aluno aluno){
         String sql = """
-                INSERT INTO alunos (nome, matricula, curso, idade, email, telefone, ativo)
-                VALUES ( ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO aluno (id, nome, matricula, curso, idade, email, telefone)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
+        aluno.setId(UUID.randomUUID());
         int atributos = jdbcTemplate.update(sql,
+                aluno.getId(),
                 aluno.getNome(),
                 aluno.getMatricula(),
                 aluno.getCurso(),
                 aluno.getIdade(),
                 aluno.getEmail(),
-                aluno.getTelefone(),
-                aluno.getAtivo());
-        return atributos > 0;
+                aluno.getTelefone());
+        return atributos > 1;
     }
 
     public Object removerAluno(UUID uuid){
         String sql = """
-                UPDATE alunos SET ativo = false WHERE id = ?
+                UPDATE aluno SET ativo = false WHERE id = ?
                 """;
         int atributos = jdbcTemplate.update(sql, uuid);
         return atributos > 0;
@@ -58,7 +68,7 @@ public class AlunoRepository{
 
     public Object editarAluno(UUID id, Aluno aluno){
         String sql = """
-                UPDATE alunos SET nome = ?, matricula = ?, curso = ?, idade = ?, email = ?, telefone = ? WHERE id = ?
+                UPDATE aluno SET nome = ?, matricula = ?, curso = ?, idade = ?, email = ?, telefone = ? WHERE id = ?
                 """;
         int atributos = jdbcTemplate.update(sql,
                 aluno.getNome(),
@@ -73,7 +83,7 @@ public class AlunoRepository{
 
     public Object pesquisarNomeAluno(String nome){
         String sql = """
-                SELECT * FROM alunos WHERE nome ILIKE ? AND ativo = true
+                SELECT * FROM aluno WHERE nome ILIKE ? AND ativo = true
                 """;
         String nomeBusca = "%" + nome + "%";
         return jdbcTemplate.query(sql, new Object[]{nomeBusca}, (rs, rowNum) -> {
