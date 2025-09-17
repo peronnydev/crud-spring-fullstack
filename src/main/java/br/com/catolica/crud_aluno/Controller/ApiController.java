@@ -15,18 +15,18 @@ public class ApiController {
     @Autowired
     AlunoRepository alunoRepository;
 
-    @GetMapping("/entidade")
+    @GetMapping("")
     public Object retornarTodos(){
         return alunoRepository.findAll();
     }
 
-    @GetMapping("/entidade/{uuid}")
+    @GetMapping("/{uuid}")
     public Object pesquisarId(@PathVariable UUID uuid){
         return alunoRepository.pesquisarIdAluno(uuid);
     }
 
 
-    @GetMapping("/entidade/busca/{nome}")
+    @GetMapping("/busca/{nome}")
     public Object pesquisarNome(@PathVariable String nome){
         return alunoRepository.pesquisarNomeAluno(nome);
     }

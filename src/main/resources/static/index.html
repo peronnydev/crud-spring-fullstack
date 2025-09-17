@@ -132,7 +132,7 @@
             mostrarAlunos();
             return;
         }
-        const resposta = await fetch(url + `/entidade/busca/${nome}`);
+        const resposta = await fetch(url + `/busca/${nome}`);
         const listaAlunos = await resposta.json();
         const tbody = document.getElementById("tbody")
         tbody.innerHTML = "";
@@ -156,7 +156,7 @@
     }
 
     async function mostrarAlunos(){
-        const resposta = await fetch(url + "/entidade");
+        const resposta = await fetch(url);
         const listaAlunos = await resposta.json();
 
         const tbody = document.getElementById("tbody")
@@ -222,7 +222,7 @@
 
     function selecionarAluno(uuid){
         uuidSelecionado = uuid;
-        fetch(url + `/entidade/${uuid}`)
+        fetch(url + `/${uuid}`)
         .then(resposta => resposta.json())
         .then(aluno => {
             document.getElementById("editarMatricula").value = aluno.matricula;
